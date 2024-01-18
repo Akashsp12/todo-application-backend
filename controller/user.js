@@ -54,3 +54,44 @@ exports.login = (req, res) => {
         });
 
 }
+exports.googleLogin = (req, res) => {
+
+    const { email, name, id, imageUrl } = req.body
+    const provider = "google"
+    user.findOne({ email })
+        .then(async (docs) => {
+            if (!docs) {
+                const hash = bcrypt.hashSync(id, 10);
+                const newUser = new user({
+                    email,
+                    password: hash,
+                    provider
+                })
+                const addNewuser = await newUser.save()
+
+                if (addNewuser) {
+                    const token = jwt.sign({ id: user._id }, process.env.JWTSECRET)
+                    res.send({ status: "Account Created", redirect: "/home", jwttoken: token });
+                } else {
+                    res.send({ status: "404", result: "something error" })
+                }
+
+
+
+            } else {
+  
+                const checkPassword = bcrypt.compareSync(id, docs.password);
+                if (checkPassword) {
+                    const token = jwt.sign({ id: docs._id }, process.env.JWTSECRET)
+
+                    res.send({ jwttoken: token, redirect: "/home" })
+                } else {
+                    res.send({ status: "incorrect Password" })
+                }
+            }
+
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+}
