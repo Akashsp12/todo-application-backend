@@ -1,4 +1,5 @@
 const user = require('../Schema/userSchema')
+const profileTable = require('../Schema/profileSchema')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -18,7 +19,20 @@ exports.postuser = async (req, res) => {
                 })
                 const addNewuser = await newUser.save()
                 if (addNewuser) {
-                    res.send({ status: "Account Created", redirect: "/sign-in" });
+
+                    const addUserInProfile = await new profileTable({
+                        userId: addNewuser._id,
+                        email: addNewuser.email,
+                        provider: addNewuser.provider,
+                        createdAt: addNewuser.createdAt
+                    })
+                    const adduserProfile = await addUserInProfile.save()
+                    if (adduserProfile) {
+                        res.send({ status: "Account Created", redirect: "/sign-in" });
+                    } else {
+                        res.send({ status: "404", result: "something error" })
+                    }
+
                 } else {
                     res.send({ status: "404", result: "something error" })
                 }
@@ -57,6 +71,7 @@ exports.login = (req, res) => {
 exports.googleLogin = (req, res) => {
 
     const { email, name, id, imageUrl } = req.body
+    const profileImage = req.body.imageUrl
     const provider = "google"
     user.findOne({ email })
         .then(async (docs) => {
@@ -70,8 +85,23 @@ exports.googleLogin = (req, res) => {
                 const addNewuser = await newUser.save()
 
                 if (addNewuser) {
-                    const token = jwt.sign({ id: user._id }, process.env.JWTSECRET)
-                    res.send({ status: "Account Created", redirect: "/home", jwttoken: token });
+                    const addUserInProfile = await new profileTable({
+                        userId: addNewuser._id,
+                        email: addNewuser.email,
+                        name: name,
+                        name: name,
+                        profileImage: imageUrl,
+                        provider: addNewuser.provider,
+                        createdAt: addNewuser.createdAt
+                    })
+                    const adduserProfile = await addUserInProfile.save()
+                    if (adduserProfile) {
+                        const token = jwt.sign({ id: addNewuser._id }, process.env.JWTSECRET)
+                        res.send({ status: "Account Created", redirect: "/home", jwttoken: token });
+                    } else {
+                        res.send({ status: "404", result: "something error" })
+                    }
+
                 } else {
                     res.send({ status: "404", result: "something error" })
                 }
@@ -79,7 +109,7 @@ exports.googleLogin = (req, res) => {
 
 
             } else {
-  
+
                 const checkPassword = bcrypt.compareSync(id, docs.password);
                 if (checkPassword) {
                     const token = jwt.sign({ id: docs._id }, process.env.JWTSECRET)
