@@ -11,6 +11,7 @@ exports.auth = (req, res, next) => {
             return res.status(400).send("invalid token");
         } else {
             req.id = verify.id;
+            console.log(req.id)
             next()
         }
     } catch (err) {

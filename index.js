@@ -10,6 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 const userRoute = require('./midddleWare/userRoute')
+const taskRoute = require('./midddleWare/taskRoute')
 
 const corsOptions = {
     origin: 'http://localhost:8100',
@@ -23,6 +24,7 @@ const corsOptions = {
 
 
 app.use('/arthiyak-v1', userRoute)
+app.use('/arthiyak-v1', taskRoute)
 
 
 app.listen(process.env.PORT, () => {
