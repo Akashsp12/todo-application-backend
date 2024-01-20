@@ -13,7 +13,7 @@ const userRoute = require('./midddleWare/userRoute')
 const taskRoute = require('./midddleWare/taskRoute')
 
 const corsOptions = {
-    origin: 'http://localhost:8100',
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204, 
