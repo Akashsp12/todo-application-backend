@@ -69,14 +69,14 @@ exports.login = (req, res) => {
 
 }
 exports.googleLogin = (req, res) => {
+    console.log(req.body)
+    const { email, displayName, uid, photoUrl ,providerId} = req.body
 
-    const { email, name, id, imageUrl } = req.body
-    const profileImage = req.body.imageUrl
-    const provider = "google"
+    const provider =providerId
     user.findOne({ email })
         .then(async (docs) => {
             if (!docs) {
-                const hash = bcrypt.hashSync(id, 10);
+                const hash = bcrypt.hashSync(uid, 10);
                 const newUser = new user({
                     email,
                     password: hash,
@@ -88,9 +88,8 @@ exports.googleLogin = (req, res) => {
                     const addUserInProfile = await new profileTable({
                         userId: addNewuser._id,
                         email: addNewuser.email,
-                        name: name,
-                        name: name,
-                        profileImage: imageUrl,
+                        name: displayName,
+                        profileImage: photoUrl,
                         provider: addNewuser.provider,
                         createdAt: addNewuser.createdAt
                     })
@@ -110,7 +109,7 @@ exports.googleLogin = (req, res) => {
 
             } else {
 
-                const checkPassword = bcrypt.compareSync(id, docs.password);
+                const checkPassword = bcrypt.compareSync(uid, docs.password);
                 if (checkPassword) {
                     const token = jwt.sign({ id: docs._id }, process.env.JWTSECRET)
 
