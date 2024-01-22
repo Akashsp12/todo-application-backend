@@ -1,5 +1,25 @@
+const taskTable = require('../Schema/taskSchema')
 exports.addTask = (req, res) => {
-    console.log(req.id)
-    console.log(req.body)
-    res.send({ d: "dasdasd" })
+    const { taskTitle, taskCategory, taskPriority, taskDatetime, taskDescription } = req.body
+
+    try {
+        const newtask = new taskTable({
+            userId: req.id,
+            taskTitle,
+            taskCategory,
+            taskPriority,
+            taskDatetime,
+            taskDescription
+        })
+        const addnewTask = newtask.save()
+        if (addnewTask) {
+            res.send({ status: "new task Created " })
+        } else {
+            res.send({ status: "you missed Something to add task" })
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+
 }
