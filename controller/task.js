@@ -13,7 +13,7 @@ exports.addTask = (req, res) => {
         })
         const addnewTask = newtask.save()
         if (addnewTask) {
-            res.send({ status: "new task Created " })
+            res.send({ status: "Task Created Successfully" })
         } else {
             res.send({ status: "you missed Something to add task" })
         }
