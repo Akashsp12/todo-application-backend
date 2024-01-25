@@ -9,7 +9,8 @@ exports.addTask = (req, res) => {
             taskCategory,
             taskPriority,
             taskDatetime,
-            taskDescription
+            taskDescription,
+            taskStatus: 'inProgress'
         })
         const addnewTask = newtask.save()
         if (addnewTask) {
@@ -21,5 +22,19 @@ exports.addTask = (req, res) => {
     catch (err) {
         console.log(err)
     }
+
+}
+exports.getTaskFromDb = (req, res) => {
+    const { result } = req.body
+    const date = new Date(result)
+    console.log(date.toISOString())
+    console.log(req.body);
+    taskTable.find({ userId: req.id, taskDatetime: date })
+        .then((docs) => {
+            console.log(docs)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 
 }
