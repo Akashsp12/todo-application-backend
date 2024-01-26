@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const userRoute = require('./midddleWare/userRoute')
 const taskRoute = require('./midddleWare/taskRoute')
+const profileRoute = require('./midddleWare/profileRoute')
 
 const corsOptions = {
     origin: '*',
@@ -25,6 +26,7 @@ const corsOptions = {
 
 app.use('/arthiyak-v1', userRoute)
 app.use('/arthiyak-v1', taskRoute)
+app.use('/arthiyak-v1', profileRoute)
 
 
 app.listen(process.env.PORT, () => {
