@@ -71,6 +71,26 @@ exports.updateTask = async (req, res) => {
         .catch((error) => {
             console.log(error);
         })
-    console.log(taskDate);
-    console.log(taskTime);
+}
+exports.updateTaskStatus = async (req, res) => {
+
+    taskTable.updateOne({ _id: req.params.id }, { $set: { taskStatus: "completed" } })
+        .then((docs) => {
+            res.send({ status: "Task status Updated" })
+
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
+exports.removeTaskFormDB = async (req, res) => {
+
+    taskTable.deleteOne({ _id: req.params.id })
+        .then((docs) => {
+            res.send({ status: "task Removed" })
+
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 }
