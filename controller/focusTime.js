@@ -16,28 +16,7 @@ exports.postFocusTime = async (req, res) => {
             .then(async (docs) => {
                 userFocusTable.findOne({ _id: req.id })
                     .then(async (docs) => {
-                        if (docs == null) {
-                            const newFocusTime = new userFocusTable({
-                                _id: req.id,
-                                focusTime
-                            })
-                            newFocusTime.save()
-                                .then(async (docs) => {
-                                    res.send({ status: "Focus time created successfully" })
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                })
-                        } else {
-                            const time = await docs.focusTime + focusTime
-                            userFocusTable.updateOne({ _id: req.id }, { $set: { focusTime: time } })
-                                .then((docs) => {
-                                    res.send({ status: "Updated successfully" })
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                })
-                        }
+                        res.send({ status: "Focus time saved successfully" })
                     })
             })
             .catch((err) => {
@@ -49,69 +28,34 @@ exports.postFocusTime = async (req, res) => {
 
 
 
-
-
-
-    // try {
-    //     FocusTable.findById({ _id: req.id })
-    //         .then(async (docs) => {
-    //             if (docs == null) {
-    //                 const newFocusTime = new FocusTable({
-    //                     userId: req.id,
-    //                     focusTime
-    //                 })
-    //                 newFocusTime.save()
-    //                     .then((docs) => {
-    //                         console.log(docs);
-    //                     })
-    //                     .catch((err) => {
-    //                         console.log(err);
-    //                     })
-    //             } else {
-    //                 const time = await docs.focusTime + focusTime
-    //                 FocusTable.updateOne({ _id: req.id }, { $set: { focusTime: time } })
-    //                     .then((docs) => {
-    //                         console.log(docs);
-    //                     })
-    //                     .catch((err) => {
-    //                         console.log(err);
-    //                     })
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         })
-    // } catch (error) {
-
-    // }
-
 }
 
 
 exports.getAllFocusTimes = async (req, res) => {
-
+    console.log(req.id);
     const date = new Date
-    FocusTable.find({ createdAt: date.toISOString().split("T")[0] })
+    FocusTable.find({ userId: req.id, createdAt: date.toISOString().split("T")[0] })
         .then((docs) => {
             const initialValue = 0;
-            const sumWithInitial = docs.reduce(
+            const todyFocusCal = docs.reduce(
                 (accumulator, currentValue) => accumulator + currentValue.focusTime,
                 initialValue,
             );
-
-            userFocusTable.findOne({ _id: req.id })
-                .then(async (docs) => {
-                    const focusAllTime = await docs.focusTime
+            FocusTable.find({ userId: req.id })
+                .then((docs) => {
+                    const initialValue = 0;
+                    const allFocusTimeCal = docs.reduce(
+                        (accumulator, currentValue) => accumulator + currentValue.focusTime,
+                        initialValue,
+                    );
                     const data = {
-                        todayFocus: convertTimeToExpression(sumWithInitial),
-                        allFocus: convertTimeToExpression(focusAllTime)
+                        todayFocus: convertTimeToExpression(todyFocusCal),
+                        allFocus: convertTimeToExpression(allFocusTimeCal)
                     }
                     res.send({ result: data })
+                }
+                )
 
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
 
         })
         .catch((err) => {
